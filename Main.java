@@ -4,13 +4,13 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Bus bus = new Bus("BUS-042", "IN_SERVICE");
+        Bus bus = new Bus("BUS011", "IN_SERVICE");
         Location location = new Location();
         TrafficData trafficData = new TrafficData("TD-001");
-        BusDriver driver = new BusDriver("USR-001", "Rahul", "LIC-9988");
-        ControlCentreOperator operator = new ControlCentreOperator("OPR-01", trafficData);
-        ObstructionUpdate report = new ObstructionUpdate("ALERT-501", "Obstruction detected");
-        Route route = new Route("RT-086", "Route 86");
+        BusDriver driver = new BusDriver("USR-001", "Rahul", "Rahul");
+        ControlCentreOperator operator = new ControlCentreOperator("011", trafficData);
+        ObstructionUpdate report = new ObstructionUpdate("AL324", "Obstruction detected");
+        Route route = new Route("324-086", "A46");
 
         // reportStatus()
         String status = bus.reportStatus();
@@ -161,11 +161,11 @@ class Location {
     private double latitude;
     private double longitude;
 
-    public void updateCoordinates(double lat, double lng) {
-        latitude = lat;
-        longitude = lng;
-        System.out.println("Coordinates updated");
-    }
+    public Location updateCoordinates(double lat, double lng) {
+    latitude = lat;
+    longitude = lng;
+    return this;
+}
 }
 
 class TrafficData {
@@ -186,8 +186,9 @@ class TrafficData {
         return 15;
     }
 
-    public void updateTrafficData() {
+    public String updateTrafficData() {
         System.out.println("Traffic data updated");
+        return "updated";
     }
 }
 
@@ -205,10 +206,10 @@ class ControlCentreOperator {
 
         boolean obstructionActive = true;
 
-        // loop fragment
         while (obstructionActive) {
 
-            trafficData.updateTrafficData();
+            String updated = trafficData.updateTrafficData();
+            System.out.println(updated);
 
             obstructionActive = false;
         }

@@ -13,15 +13,38 @@ public class Main {
         Route route = new Route("RT-086", "Route 86");
         NavigationSystem navSys = new NavigationSystem();
         RouteController routeController = new RouteController();
+        AlertService alertService = new AlertService();
 
         // Receiving alternative route depending on traffic or deviation detected
 
         System.out.println("David Testing\n");
 
         // Bus monitors route while is it in service
-        navSys.monitorRoute(bus, driver, routeController, gps, trafficData, route);
+        navSys.monitorRoute(bus, driver, routeController, gps, trafficData, route, alertService);
     }
 
+}
+
+class AlertService {
+
+    public void createRerouteAlert(String alertID, String message,
+            double deviationDist, String newRoute, BusDriver driver) {
+        DeviationAlert alert = new DeviationAlert(alertID, message, deviationDist);
+        System.out.println(alert.generateMessage());
+        sendNotification(driver, newRoute);
+    }
+
+    public void createTrafficAlert(String alertID, String message,
+            int delay, String newRoute, BusDriver driver) {
+        TrafficAlert alert = new TrafficAlert(alertID, message, delay);
+        System.out.println(alert.generateMessage());
+        sendNotification(driver, newRoute);
+    }
+
+    public void sendNotification(BusDriver driver, String newRoute) {
+        System.out.println("[AlertService] Notifying " + driver.getName());
+        System.out.println("[AlertService] " + newRoute);
+    }
 }
 
 abstract class Alert {
@@ -249,46 +272,43 @@ class NavigationSystem {
     }
 
     public void monitorRoute(Bus bus, BusDriver driver, RouteController routeController, GPS gps,
-            TrafficData trafficData, Route route) {
+            TrafficData trafficData, Route route, AlertService alertService) {
         while (bus.reportStatus().equals("IN_SERVICE")) {
+
+            // Monitor every 1 second, but if actually implemented would be 5 seconds
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
 
             Coordinate currLocation = gps.getLocation();
 
             // Check for deviation then create alert if true and display new route
             if (routeController.checkDeviation(this, gps.getLocation())) {
-
-                DeviationAlert devAlert = new DeviationAlert("ALERT-502", "Deviation detected",
-                        calcDistFromRoute(gps.getLocation()));
-
-                // Generate deviation alert message and notify driver
-                String devMessage = devAlert.generateMessage();
-                System.out.println(devMessage);
-                devAlert.sendToDriver(driver);
-
-                // Get new route and display to driver
-                System.out.println(calcNewRoute(currLocation, route));
+                String detourRoute = calcNewRoute(currLocation, route);
                 driver.displayNewRoute();
+                alertService.createRerouteAlert("ALERT-502", "Deviation detected", calcDistFromRoute(currLocation),
+                        detourRoute, driver);
             }
 
             System.out.println("\n");
 
             // Check for traffic affecting route
             if (routeController.checkTraffic(trafficData)) {
-                TrafficAlert trafficAlert = new TrafficAlert("ALERT-503", "Traffic detected",
-                        trafficData.estimateDelay());
-
-                // Create alert for traffic disruption
-                String trafficMessage = trafficAlert.generateMessage();
-                System.out.println(trafficMessage);
-                trafficAlert.sendToDriver(driver);
-
-                // Get new route and display to driver
-                System.out.println(calcNewRoute(currLocation, route));
+                String detourRoute = calcNewRoute(currLocation, route);
                 driver.displayNewRoute();
+                alertService.createTrafficAlert("ALERT-503", "Traffic detected", trafficData.estimateDelay(),
+                        detourRoute, driver);
+
             }
-            // Stop loop for testing purposes
+
+            System.out.println("\n");
+
             bus.updateStatus("NOT_IN_SERVICE");
             System.out.println("BUS NO LONGER OPERATIONAL");
+
         }
     }
 }

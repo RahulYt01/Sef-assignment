@@ -286,7 +286,7 @@ class NavigationSystem {
             Coordinate currLocation = gps.getLocation();
 
             // Check for deviation then create alert if true and display new route
-            if (routeController.checkDeviation(this, gps.getLocation())) {
+            if (routeController.checkDeviation(this, gps)) {
                 String detourRoute = calcNewRoute(currLocation, route);
                 driver.displayNewRoute();
                 alertService.createRerouteAlert("ALERT-502", "Deviation detected", calcDistFromRoute(currLocation),
@@ -317,16 +317,11 @@ class RouteController {
     private static final double DEVIATION_THRESHOLD = 100.0; // meters
 
     public Boolean checkTraffic(TrafficData trafficData) {
-        if (trafficData.detectTrafficDisruption()) {
-            return true;
-        }
-        return false;
+        return trafficData.detectTrafficDisruption();
     }
 
-    public Boolean checkDeviation(NavigationSystem navSys, Coordinate coordinate) {
-        if (navSys.calcDistFromRoute(coordinate) > DEVIATION_THRESHOLD) {
-            return true;
-        }
-        return false;
+    public Boolean checkDeviation(NavigationSystem navSys, GPS gps) {
+        return navSys.calcDistFromRoute(gps.getLocation()) > DEVIATION_THRESHOLD;
+
     }
 }

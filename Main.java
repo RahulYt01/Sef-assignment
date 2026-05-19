@@ -1,7 +1,6 @@
 import java.time.LocalDateTime;
 
 public class Main {
-
     public static void main(String[] args) {
 
         Bus bus = new Bus("BUS011", "IN_SERVICE");
@@ -57,7 +56,6 @@ public class Main {
 }
 
 abstract class Alert {
-
     private String alertID;
     private LocalDateTime createdTime;
     private String message;
@@ -85,7 +83,6 @@ abstract class Alert {
 }
 
 class ObstructionUpdate extends Alert {
-
     private String obstructionType;
 
     public ObstructionUpdate(String alertID, String message) {
@@ -109,7 +106,6 @@ class ObstructionUpdate extends Alert {
 }
 
 class BusDriver {
-
     private String userID;
     private String name;
     private String licenceNumber;
@@ -130,7 +126,6 @@ class BusDriver {
 }
 
 class Bus {
-
     private String busID;
     private String operationalStatus;
 
@@ -157,7 +152,6 @@ class Bus {
 }
 
 class Location {
-
     private double latitude;
     private double longitude;
 
@@ -169,7 +163,6 @@ class Location {
 }
 
 class TrafficData {
-
     private String dataID;
     private String congestionLevel;
 
@@ -193,7 +186,6 @@ class TrafficData {
 }
 
 class ControlCentreOperator {
-
     private String operatorID;
     private TrafficData trafficData;
 
@@ -219,7 +211,6 @@ class ControlCentreOperator {
 }
 
 class Route {
-
     private String routeID;
     private String routeName;
 

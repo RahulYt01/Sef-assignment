@@ -75,30 +75,6 @@ abstract class Alert {
     }
 }
 
-class ObstructionUpdate extends Alert {
-
-    private String obstructionType;
-
-    public ObstructionUpdate(String alertID, String message) {
-        super(alertID, message);
-    }
-
-    public void selectObstructionType(String type) {
-        obstructionType = type;
-        System.out.println("Type selected: " + type);
-    }
-
-    public void submitVoiceInput(byte[] audio) {
-        obstructionType = "VOICE_INPUT";
-        System.out.println("Voice input submitted");
-    }
-
-    public boolean confirmAffectedRoute(Route route) {
-        System.out.println("Route confirmed: " + route.getRouteID());
-        return true;
-    }
-}
-
 class DeviationAlert extends Alert {
     private double deviationDist;
 
@@ -288,9 +264,9 @@ class NavigationSystem {
             // Check for deviation then create alert if true and display new route
             if (routeController.checkDeviation(this, gps)) {
                 String detourRoute = calcNewRoute(currLocation, route);
-                driver.displayNewRoute();
                 alertService.createRerouteAlert("ALERT-502", "Deviation detected", calcDistFromRoute(currLocation),
                         detourRoute, driver);
+                driver.displayNewRoute();
             }
 
             System.out.println("\n");
@@ -298,9 +274,9 @@ class NavigationSystem {
             // Check for traffic affecting route
             if (routeController.checkTraffic(trafficData)) {
                 String detourRoute = calcNewRoute(currLocation, route);
-                driver.displayNewRoute();
                 alertService.createTrafficAlert("ALERT-503", "Traffic detected", trafficData.estimateDelay(),
                         detourRoute, driver);
+                driver.displayNewRoute();
 
             }
 

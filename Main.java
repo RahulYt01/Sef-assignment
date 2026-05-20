@@ -5,7 +5,7 @@ public class Main {
 
         Bus bus = new Bus("BUS011", "IN_SERVICE");
         Location location = new Location();
-        TrafficData trafficData = new TrafficData("TD-001");
+        TrafficData trafficData = new TrafficData("001");
         BusDriver driver = new BusDriver("USR-001", "Rahul", "Rahul");
         ControlCentreOperator operator = new ControlCentreOperator("011", trafficData);
         ObstructionUpdate report = new ObstructionUpdate("AL324", "Obstruction detected");

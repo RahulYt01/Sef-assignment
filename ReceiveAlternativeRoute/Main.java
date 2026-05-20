@@ -16,13 +16,11 @@ public class Main {
         AlertService alertService = new AlertService();
 
         // Receiving alternative route depending on traffic or deviation detected
-
         System.out.println("David Testing\n");
 
         // Bus monitors route while is it in service
         navSys.monitorRoute(bus, driver, routeController, gps, trafficData, route, alertService);
     }
-
 }
 
 class AlertService {
@@ -251,7 +249,7 @@ class NavigationSystem {
             TrafficData trafficData, Route route, AlertService alertService) {
         while (bus.reportStatus().equals("IN_SERVICE")) {
 
-            // Monitor every 1 second, but if actually implemented would be 5 seconds
+            // Monitor every 1 second, for sake of running program quickly
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -263,9 +261,13 @@ class NavigationSystem {
 
             // Check for deviation then create alert if true and display new route
             if (routeController.checkDeviation(this, gps)) {
+
+                // Create deviation detected alert
                 String detourRoute = calcNewRoute(currLocation, route);
                 alertService.createRerouteAlert("ALERT-502", "Deviation detected", calcDistFromRoute(currLocation),
                         detourRoute, driver);
+
+                // Show driver the new route
                 driver.displayNewRoute();
             }
 
@@ -273,9 +275,13 @@ class NavigationSystem {
 
             // Check for traffic affecting route
             if (routeController.checkTraffic(trafficData)) {
+
+                // Create traffic detected alert
                 String detourRoute = calcNewRoute(currLocation, route);
                 alertService.createTrafficAlert("ALERT-503", "Traffic detected", trafficData.estimateDelay(),
                         detourRoute, driver);
+
+                // Show driver the new route
                 driver.displayNewRoute();
 
             }
@@ -292,12 +298,13 @@ class NavigationSystem {
 class RouteController {
     private static final double DEVIATION_THRESHOLD = 100.0; // meters
 
+    // Get traffic disruption information
     public Boolean checkTraffic(TrafficData trafficData) {
         return trafficData.detectTrafficDisruption();
     }
 
+    // Get route deviation information
     public Boolean checkDeviation(NavigationSystem navSys, GPS gps) {
         return navSys.calcDistFromRoute(gps.getLocation()) > DEVIATION_THRESHOLD;
-
     }
 }
